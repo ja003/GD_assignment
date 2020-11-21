@@ -1,0 +1,10 @@
+Minecraft s funkcemi:
+• 4 druhy kostiček, stačí barevně odlišit/jiná textura
+• ve stavebním módu (tj. když si uživatel vybere jednu ze 4 kostiček a chce ji položit) se ukáže wireframe/poloprůhledná kostka, se kterou budeme "zaměřovat" a kostka se bude snapovat ke gridu, tzn. nepůjde stavět jakkoliv
+• Kostky nepůjde umístit jen tak do vzduchu, tzn. vždy musí jednou stranou sedět k jiné kostce nebo podlaze
+• Uživatel bude mít možnost bloky rozbít, každá ze 4 kostek bude mít svou "tvrdost", tudíž bude potřeba déle držet tlačítko pro rozbití
+• Při zapnutí nové mapy hra automaticky vygeneruje nějaký terén/svět, na kterém se bude hráč pohybovat (podívejte se třeba na perlin noise včetně nějakých modifikací pro výraznější rozdíly ve výšce)
+• Textura/barva terénu/kostek bude proměnlivá podle toho v jaké výšce je (toto platí pouze pro generovaný terén, nikoliv kostky položené hráčem)
+• V případě, že hráč dojde na konec mapy, dogeneruje se další kus a staré se odstraní, ideálně by generování mělo být deterministické (bonus: zachovat uzivateli změny v odstraněném kusu mapy a obnovit je když se tam hráč vrátí)
+• Hra a stav světa půjde uložit do souboru a načíst (není potřeba UI, stačí pevná cesta na 1 save slot)
+• Zamyslete se nad případnými optimalizacemi, které sepište a případně také implementujte, pokud čas dovolí
