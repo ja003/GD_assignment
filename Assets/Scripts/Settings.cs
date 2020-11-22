@@ -16,6 +16,13 @@ public class Settings : ScriptableObject
 		get { return WorldSizeInChunks * ChunkWidth; }
 	}
 
+	public int WorldCentre
+	{
+
+		get { return (WorldSizeInChunks * ChunkWidth) / 2; }
+
+	}
+
 	public int ViewDistanceInChunks = 1;
 
 

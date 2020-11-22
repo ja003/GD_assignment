@@ -26,13 +26,12 @@ public class World : MonoBehaviour
 	Vector3Int playerLastCoord;
 
 
-	public GameObject debugScreen;
+	public DebugScreen DebugScreen;
 
 	public static World Instance { get; private set; }
 
 	public WorldData worldData;
 
-	public string appPath;
 
 	private void Awake()
 	{
@@ -45,22 +44,24 @@ public class World : MonoBehaviour
 
 	private void Start()
 	{
-		appPath = Application.persistentDataPath;
 
 		ChunksController = new ChunksController();
 		worldData = SaveSystem.LoadWorld("XX");
+
+
+		spawnPosition = new Vector3(
+			Settings.Get.WorldCentre,
+			Settings.Get.ChunkHeight / 2 - 50,
+			Settings.Get.WorldCentre);
+
+		Player.position = spawnPosition;
+		playerLastCoord = CoordConvertor.GetChunkCoord(Player.position);
 
 		Random.InitState(seed);
 		LoadWorld();
 
 		GenerateWorld();
-		spawnPosition = new Vector3(
-			(Settings.Get.WorldSizeInChunks * Settings.Get.ChunkWidth) / 2f,
-			Settings.Get.ChunkHeight / 2 - 50,
-			(Settings.Get.WorldSizeInChunks * Settings.Get.ChunkWidth) / 2f);
 
-		Player.position = spawnPosition;
-		playerLastCoord = CoordConvertor.GetChunkCoord(Player.position);
 	}
 
 	void Update()
@@ -76,7 +77,7 @@ public class World : MonoBehaviour
 		ChunksController.CreateNextChunk();
 
 		if(Input.GetKeyDown(KeyCode.F3))
-			debugScreen.SetActive(!debugScreen.activeSelf);
+			DebugScreen.gameObject.SetActive(!DebugScreen.gameObject.activeSelf);
 
 		if(Input.GetKeyDown(KeyCode.F1))
 			SaveSystem.SaveWorld(worldData);
@@ -103,13 +104,14 @@ public class World : MonoBehaviour
 	void GenerateWorld()
 	{
 		int mid = Settings.Get.WorldSizeInChunks / 2;
-		for(int x = mid - Settings.Get.ViewDistanceInChunks; x < mid + Settings.Get.ViewDistanceInChunks; x++)
+		int viewDist = Settings.Get.ViewDistanceInChunks;
+		for(int x = mid - viewDist; x < mid + viewDist; x++)
 		{
-			for(int z = mid - Settings.Get.ViewDistanceInChunks; z < mid + Settings.Get.ViewDistanceInChunks; z++)
+			for(int z = mid - viewDist; z < mid + viewDist; z++)
 			{
 				Vector3Int coord = new Vector3Int(x, 0, z);
-				ChunksController.CreateChunkAt(coord);
-				
+				ChunksController.AddChunkToCreate(coord);				
+				//ChunksController.CreateChunkAt(coord);				
 			}
 		}
 
@@ -134,6 +136,8 @@ public class World : MonoBehaviour
 		if(!IsVoxelInWorld(pos))
 			return 0;
 
+
+		//undestructable block at the bottom
 		if(yPos == 0)
 			return EBlockId.Bedrock; 
 
@@ -141,6 +145,10 @@ public class World : MonoBehaviour
 			biome.terrainHeight *
 			Noise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, biome.terrainScale)) +
 			biome.solidGroundHeight;
+
+
+		if(yPos < terrainHeight + 10 && IsVoxelAtWorldBorder(pos))
+			return EBlockId.Bedrock;
 
 		EBlockId voxelValue;
 
@@ -166,6 +174,13 @@ public class World : MonoBehaviour
 		return pos.x >= 0 && pos.x < Settings.Get.WorldSizeInVoxels &&
 			pos.y >= 0 && pos.y < Settings.Get.ChunkHeight &&
 			pos.z >= 0 && pos.z < Settings.Get.WorldSizeInVoxels;
+	}
+
+	bool IsVoxelAtWorldBorder(Vector3 pos)
+	{
+		int borderSize = settings.ChunkWidth + 1;
+		return pos.x < borderSize || pos.x > Settings.Get.WorldSizeInVoxels - borderSize ||
+			pos.z < borderSize || pos.z > Settings.Get.WorldSizeInVoxels - borderSize;
 	}
 
 }

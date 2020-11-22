@@ -53,6 +53,7 @@ public class WorldData
 
 		//from file
 		ChunkData chunk = SaveSystem.LoadChunk(worldName, coord);
+		Debug.Log($"Load chunk at {coord} = {chunk}");
 		if(chunk != null)
 		{
 			chunks.Add(coord, chunk);
@@ -78,20 +79,20 @@ public class WorldData
 			pos.z >= 0 && pos.z < Settings.Get.WorldSizeInVoxels;
 	}
 
-	public void SetVoxel(Vector3 pos, EBlockId value)
-	{
-		if(!IsVoxelInWorld(pos))
-			return;
+	//public void SetVoxel(Vector3 pos, EBlockId value)
+	//{
+	//	if(!IsVoxelInWorld(pos))
+	//		return;
 
-		Vector3Int coord = GetChunkCoord(pos);
+	//	Vector3Int coord = GetChunkCoord(pos);
 
-		ChunkData chunk = RequestChunk(coord, true);
+	//	ChunkData chunk = RequestChunk(coord, true);
 
-		Vector3Int voxel = new Vector3Int((int)(pos.x - coord.x), (int)(pos.y), (int)(pos.z - coord.z));
+	//	Vector3Int voxel = new Vector3Int((int)(pos.x - coord.x), (int)(pos.y), (int)(pos.z - coord.z));
 
-		chunk.map[voxel.x, voxel.y, voxel.z].id = value;
-		AddToModifiedChunkList(chunk);
-	}
+	//	chunk.map[voxel.x, voxel.y, voxel.z].id = value;
+	//	AddToModifiedChunkList(chunk);
+	//}
 
 	public VoxelState GetVoxel(Vector3 pos)
 	{
@@ -106,7 +107,9 @@ public class WorldData
 			return null;
 
 		// Then create a Vector3Int with the position of our voxel *within* the chunk.
-		Vector3Int voxel = new Vector3Int((int)(pos.x - coord.x), (int)pos.y, (int)(pos.z - coord.z));
+		//Vector3Int voxel = new Vector3Int((int)(pos.x - coord.x), (int)pos.y, (int)(pos.z - coord.z));
+		Vector3Int voxel = new Vector3Int((int)(pos.x - coord.x * Settings.Get.ChunkWidth), (int)pos.y, (int)(pos.z - coord.z * Settings.Get.ChunkWidth));
+		//Vector3Int voxel = new Vector3Int((int)(pos.x), (int)pos.y, (int)(pos.z));
 
 		// Then set the voxel in our chunk.
 		return chunk.map[voxel.x, voxel.y, voxel.z];
@@ -120,8 +123,8 @@ public class WorldData
 		int z = Mathf.FloorToInt(pos.z / Settings.Get.ChunkWidth);
 
 		// Then reverse that to get the position of the chunk.
-		x *= Settings.Get.ChunkWidth;
-		z *= Settings.Get.ChunkWidth;
+		//x *= Settings.Get.ChunkWidth;
+		//z *= Settings.Get.ChunkWidth;
 
 		return new Vector3Int(x, 0, z);
 	}

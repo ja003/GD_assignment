@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Build.Reporting;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -31,6 +29,8 @@ public class Player : MonoBehaviour
 	[SerializeField] Text selectedBlockText;
 	public int selectedBlockIndex = 0;
 
+	[SerializeField] Image hitStrengthBar;
+
 	private bool isSprinting;
 	private bool isGrounded;
 
@@ -54,6 +54,8 @@ public class Player : MonoBehaviour
 		inventory.Add(EBlockId.Orange);
 		inventory.Add(EBlockId.Pink);
 		inventory.Add(EBlockId.Blue);
+
+		UpdateSelectedBlock();
 	}
 
 	void FixedUpdate()
@@ -71,6 +73,21 @@ public class Player : MonoBehaviour
 	{
 		GetPlayerInputs();
 		PlaceCursorBlock();
+		UpdateHitStrengthBar();
+	}
+
+	private void UpdateHitStrengthBar()
+	{
+		bool active = highlightBlock.gameObject.activeSelf && Input.GetMouseButton(0);
+		hitStrengthBar.gameObject.SetActive(active);
+		if(!active)
+			return;
+
+		float mouseHoldTime = Time.time - mouseDownStart;
+		const int max_durability = 2;
+		const int max_bar_height = 400;
+		float percentage = mouseHoldTime / max_durability;
+		hitStrengthBar.rectTransform.sizeDelta = new Vector2(40,percentage * max_bar_height);
 	}
 
 	void Jump()
@@ -140,7 +157,7 @@ public class Player : MonoBehaviour
 	}
 
 	bool disableInput;
-	float mouseDownTime;
+	float mouseDownStart;
 
 	private void GetPlayerInputs()
 	{
@@ -171,21 +188,19 @@ public class Player : MonoBehaviour
 				selectedBlockIndex++;
 			if(scroll < 0)
 				selectedBlockIndex--;
-
-			selectedBlockIndex = selectedBlockIndex % inventory.Count;
-			selectedBlockText.text = inventory[selectedBlockIndex] + " block selected";
+			UpdateSelectedBlock();
 		}
 
 		if(highlightBlock.gameObject.activeSelf)
 		{
 			if(Input.GetMouseButtonDown(0))
 			{
-				mouseDownTime = Time.time;
+				mouseDownStart = Time.time;
 			}
 
 			else if(Input.GetMouseButtonUp(0))
 			{
-				world.ChunksController.GetChunk(highlightBlock.position).TryDestroyVoxel(highlightBlock.position, Time.time - mouseDownTime);
+				world.ChunksController.GetChunk(highlightBlock.position).TryDestroyVoxel(highlightBlock.position, Time.time - mouseDownStart);
 			}
 		}
 
@@ -193,6 +208,12 @@ public class Player : MonoBehaviour
 		{
 			world.ChunksController.GetChunk(PlaceBlock.position).EditVoxel(PlaceBlock.position, inventory[selectedBlockIndex]);
 		}
+	}
+
+	private void UpdateSelectedBlock()
+	{
+		selectedBlockIndex = selectedBlockIndex % inventory.Count;
+		selectedBlockText.text = inventory[selectedBlockIndex] + " block selected";
 	}
 
 	void PlaceCursorBlock()

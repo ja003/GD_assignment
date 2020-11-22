@@ -6,19 +6,28 @@ using UnityEngine;
 [Serializable]
 public class ChunkData
 {
-	static Settings settings => World.Instance.settings;
+	int x;
+	int z;
+	public Vector3Int coord
+	{
 
-	public Vector3Int position;
+		get { return new Vector3Int(x, 0, z); }
+		set
+		{
+			x = value.x;
+			z = value.z;
+		}
+	}
 
 	public ChunkData(Vector3Int pos)
 	{
-		position = pos;
+		coord = pos;
 		Init();
 	}
 
 	public ChunkData(int x, int z) //x,z
 	{
-		position = new Vector3Int(x, 0, z);
+		coord = new Vector3Int(x, 0, z);
 		Init();
 	}
 
@@ -39,10 +48,18 @@ public class ChunkData
 				for(int z = 0; z < Settings.Get.ChunkWidth; z++)
 				{
 					map[x, y, z] = new VoxelState(World.Instance.GetVoxel(
-						new Vector3(x + position.x, y, z + position.y)));
+						new Vector3(
+							x + coord.x * Settings.Get.ChunkWidth, 
+							y,
+							z + coord.z * Settings.Get.ChunkWidth)));
 				}
 			}
 		}
-		World.Instance.worldData.AddToModifiedChunkList(this);
+		//World.Instance.worldData.AddToModifiedChunkList(this);
+	}
+
+	public override string ToString()
+	{
+		return $"[{x},{z}]";
 	}
 }

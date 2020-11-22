@@ -6,15 +6,26 @@ using UnityEngine.UI;
 public class DebugScreen : MonoBehaviour
 {
 	[SerializeField] World world;
-	[SerializeField] Text text;
+	[SerializeField] Text controls;
+	[SerializeField] Text info;
 
 	float frameRate;
 	float timer;
 
+	public string DestroyText;
+
+	private void Start()
+	{
+		string controlsText = "CONTROLS\n";
+		controlsText += $"Press F1 to save\n";
+		controlsText += $"Press F3 to hide UI\n";
+		controlsText += $"Scroll to change item\n";
+		controls.text = controlsText;
+	}
+
 	private void Update()
 	{
-		string debugText = "DEBUG\n";
-
+		string infoText = "INFO\n";
 
 		if(timer > 1)
 		{
@@ -24,12 +35,11 @@ public class DebugScreen : MonoBehaviour
 		else
 			timer += Time.deltaTime;
 
-		debugText += "framerate = " + frameRate + "\n";
-		Vector3 playerPos = world.Player.position;
-		debugText += $"XYZ = [{(int)playerPos.x},{(int)playerPos.y},{(int)playerPos.z}]\n";
-		debugText += $"chunk = {world.playerCoord}\n";
+		infoText += "framerate = " + frameRate + "\n";
+		infoText += $"chunk = [{world.playerCoord.x},{world.playerCoord.z}]\n";
+		infoText += $"{SaveSystem.debugText}\n";
+		infoText += $"{DestroyText}\n";
 
-		text.text = debugText;
-
+		info.text = infoText;
 	}
 }

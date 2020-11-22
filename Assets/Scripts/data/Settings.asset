@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f88a96111b7bbc4fb68f2f89671d37d, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  LoadDistance: 1
+  LoadDistance: 2
   ChunkWidth: 16
   ChunkHeight: 128
-  WorldSizeInChunks: 100
-  ViewDistanceInChunks: 1
+  WorldSizeInChunks: 5
+  ViewDistanceInChunks: 2
   TextureAtlasSizeInBlocks: 16

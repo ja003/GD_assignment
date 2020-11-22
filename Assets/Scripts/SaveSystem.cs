@@ -7,55 +7,59 @@ using UnityEngine;
 
 public static class SaveSystem
 {
+	private static string worldDataPath;
+
 	public static void SaveWorld(WorldData world)
 	{
-		string savePath = World.Instance.appPath + "/saves/" + world.worldName + "/";
+		if(!Directory.Exists(worldDataPath))
+			Directory.CreateDirectory(worldDataPath);
 
-		if(!Directory.Exists(savePath))
-			Directory.CreateDirectory(savePath);
-
-		Debug.Log("Saving " + world.worldName + " to " + savePath);
+		Debug.Log("Saving " + world.worldName + " to " + worldDataPath);
 
 		BinaryFormatter formatter = new BinaryFormatter();
-		FileStream stream = new FileStream(savePath + "world.world", FileMode.Create);
+		FileStream stream = new FileStream(worldDataPath + "world.world", FileMode.Create);
 		formatter.Serialize(stream, world);
 		stream.Close();
+
+		//copy path to clipboard
+		GUIUtility.systemCopyBuffer = worldDataPath;
 
 		Thread thread = new Thread(() => SaveChunks(world));
 		thread.Start();
 	}
 
+	public static string debugText;
+
 	public static void SaveChunks(WorldData world)
 	{
-
-		// Copy modified chunks into a new list and clear the old one to prevent
-		// chunks being added to list while it is saving.
+		//only save modified chunks
 		List<ChunkData> chunks = new List<ChunkData>(world.modifiedChunks);
 		world.modifiedChunks.Clear();
 
-		// Loop through each chunk and save it.
 		int count = 0;
 		foreach(ChunkData chunk in chunks)
 		{
-
-			SaveSystem.SaveChunk(chunk, world.worldName);
+			SaveChunk(chunk, world.worldName);
 			count++;
-
+			debugText = $"{count}/{chunks.Count} chunks saved";
+			Debug.Log(debugText);
 		}
 
-		Debug.Log(count + " chunks saved.");
-
+		debugText = count + " chunks saved. \n";
+		debugText += "Path copied to clipboard";
+		Debug.Log(debugText);
 	}
 
 	public static WorldData LoadWorld(string worldName, int seed = 0)
 	{
-		string loadPath = World.Instance.appPath + "/saves/" + worldName + "/";
+		worldDataPath = Application.persistentDataPath + "/saves/" + worldName + "/";
+
 		WorldData world;
-		if(File.Exists(loadPath + "world.world"))
+		if(File.Exists(worldDataPath + "world.world"))
 		{
-			Debug.Log("Loading " + worldName + " from " + loadPath);
+			Debug.Log("Loading " + worldName + " from " + worldDataPath);
 			BinaryFormatter formatter = new BinaryFormatter();
-			FileStream stream = new FileStream(loadPath + "world.world", FileMode.Open);
+			FileStream stream = new FileStream(worldDataPath + "world.world", FileMode.Open);
 			world = formatter.Deserialize(stream) as WorldData;
 			stream.Close();
 			return new WorldData(world);
@@ -72,31 +76,30 @@ public static class SaveSystem
 	public static void SaveChunk(ChunkData chunk, string worldName)
 	{
 
-		string chunkName = chunk.position.x + "-" + chunk.position.y;
+		string chunkName = chunk.coord.x + "-" + chunk.coord.z;
 
 		// Set our save location and make sure we have a saves folder ready to go.
-		string savePath = World.Instance.appPath + "/saves/" + worldName + "/chunks/";
+		string saveChunkPath = worldDataPath + "chunks/";
 
 		// If not, create it.
-		if(!Directory.Exists(savePath))
-			Directory.CreateDirectory(savePath);
+		if(!Directory.Exists(saveChunkPath))
+			Directory.CreateDirectory(saveChunkPath);
 
 		BinaryFormatter formatter = new BinaryFormatter();
-		FileStream stream = new FileStream(savePath + chunkName + ".chunk", FileMode.Create);
-		Debug.Log("Saving chunk " + chunkName);
+		FileStream stream = new FileStream(saveChunkPath + chunkName + ".chunk", FileMode.Create);
+		//Debug.Log("Saving chunk " + chunkName);
 
 		formatter.Serialize(stream, chunk);
 		stream.Close();
 
 	}
 
-	public static ChunkData LoadChunk(string worldName, Vector3Int position)
+	public static ChunkData LoadChunk(string worldName, Vector3Int pCoord)
 	{
-
-		string chunkName = position.x + "-" + position.z;
+		string chunkName = pCoord.x + "-" + pCoord.z;
 
 		// Get the path to our world saves.
-		string loadPath = World.Instance.appPath + "/saves/" + worldName + "/chunks/" + chunkName + ".chunk";
+		string loadPath = worldDataPath + "chunks/" + chunkName + ".chunk";
 
 		// Check if a save exists for the name we were passed.
 		if(File.Exists(loadPath))

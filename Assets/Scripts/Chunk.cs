@@ -48,7 +48,8 @@ public class Chunk
 		chunkObject.transform.position = new Vector3(coord.x * Settings.Get.ChunkWidth, 0, coord.z * Settings.Get.ChunkWidth);
 		chunkObject.name = $"Chunk_{coord.x},{coord.z}";
 
-		chunkData = World.Instance.worldData.RequestChunk(new Vector3Int((int)position.x, 0, (int)position.z), true);
+		//chunkData = World.Instance.worldData.RequestChunk(new Vector3Int((int)position.x, 0, (int)position.z), true);
+		chunkData = World.Instance.worldData.RequestChunk(coord, true);
 
 		UpdateChunk();
 	}
@@ -65,7 +66,6 @@ public class Chunk
 				{
 					if(World.Instance.BlockManager.IsSolid(chunkData.map[x, y, z].id))
 						UpdateMeshData(new Vector3(x, y, z));
-
 				}
 			}
 		}
@@ -120,7 +120,10 @@ public class Chunk
 
 		EBlockId id = chunkData.map[xCheck, yCheck, zCheck].id;
 		float duration = World.Instance.BlockManager.GetDuration(id);
-		Debug.Log($"Try destroy: {pMouseHoldTime}/{duration}");
+		string durationText = id == EBlockId.Bedrock ? "undestructable" : duration.ToString("0.0");
+		string debugText = $"Try destroy: {pMouseHoldTime:0.0}/{durationText}";
+		World.Instance.DebugScreen.DestroyText = debugText;
+		Debug.Log(debugText);
 		if(duration < pMouseHoldTime)
 			EditVoxel(pPos, EBlockId.None);
 	}
@@ -152,9 +155,9 @@ public class Chunk
 			Vector3 currentVoxel = thisVoxel + VoxelData.faceChecks[p];
 			if(!IsVoxelInChunk(currentVoxel))
 			{
-				World.Instance.ChunksController.AddChunkToUpdate(currentVoxel + position);
+				//World.Instance.ChunksController.AddChunkToUpdate(currentVoxel + position);
 				//World.Instance.ChunksController.chunksToUpdate.Insert(0, World.Instance.ChunksController.GetChunk(currentVoxel + position));
-				//World.Instance.GetChunk(thisVoxel + position).UpdateChunk();
+				World.Instance.ChunksController.GetChunk(thisVoxel + position).UpdateChunk();
 			}
 		}
 	}
