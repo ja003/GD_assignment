@@ -36,8 +36,8 @@ public class DebugScreen : MonoBehaviour
 			timer += Time.deltaTime;
 
 		infoText += "framerate = " + frameRate + "\n";
-		infoText += $"chunk = [{world.playerCoord.x},{world.playerCoord.z}]\n";
-		infoText += $"{SaveSystem.debugText}\n";
+		infoText += $"chunk = [{world.PlayerCoord.x},{world.PlayerCoord.z}]\n";
+		infoText += $"{SaveSystem.DebugText}\n";
 		infoText += $"{DestroyText}\n";
 
 		info.text = infoText;

@@ -19,13 +19,13 @@ public class ChunkData
 		}
 	}
 
-	public ChunkData(Vector3Int pos)
+	public ChunkData(Vector3Int pPos)
 	{
-		coord = pos;
+		coord = pPos;
 		Init();
 	}
 
-	public ChunkData(int x, int z) //x,z
+	public ChunkData(int x, int z)
 	{
 		coord = new Vector3Int(x, 0, z);
 		Init();
@@ -33,11 +33,11 @@ public class ChunkData
 
 	private void Init()
 	{
-		map = new VoxelState[Settings.Get.ChunkWidth, Settings.Get.ChunkHeight, Settings.Get.ChunkWidth];
+		map = new EBlockId[Settings.Get.ChunkWidth, Settings.Get.ChunkHeight, Settings.Get.ChunkWidth];
 	}
 
 	[HideInInspector]
-	public VoxelState[,,] map;
+	public EBlockId[,,] map;
 
 	public void Populate()
 	{
@@ -47,15 +47,14 @@ public class ChunkData
 			{
 				for(int z = 0; z < Settings.Get.ChunkWidth; z++)
 				{
-					map[x, y, z] = new VoxelState(World.Instance.GetVoxel(
+					map[x, y, z] = World.Instance.VoxelController.GetVoxel(
 						new Vector3(
-							x + coord.x * Settings.Get.ChunkWidth, 
+							x + coord.x * Settings.Get.ChunkWidth,
 							y,
-							z + coord.z * Settings.Get.ChunkWidth)));
+							z + coord.z * Settings.Get.ChunkWidth));
 				}
 			}
 		}
-		//World.Instance.worldData.AddToModifiedChunkList(this);
 	}
 
 	public override string ToString()

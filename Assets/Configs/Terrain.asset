@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1aaa424693065c9478074ad42346e128, type: 3}
-  m_Name: Default
+  m_Name: Terrain
   m_EditorClassIdentifier: 
   chunkMaterial: {fileID: 2100000, guid: de20141548f4aaa4887dc3b5b8c4cc7a, type: 2}
-  solidGroundHeight: 2
-  terrainHeight: 5
-  terrainScale: 2
-  dirtThickness: 2
+  solidGroundHeight: 10
+  terrainHeight: 8
+  terrainScale: 1
+  dirtThickness: 5

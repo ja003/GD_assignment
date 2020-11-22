@@ -7,7 +7,7 @@ using UnityEngine.UI;
 [Serializable]
 public class WorldData
 {
-	public string worldName = "Prototype";
+	public string worldName;
 	public int seed;
 
 	[NonSerialized]
@@ -29,18 +29,16 @@ public class WorldData
 		this.seed = seed;
 	}
 
-	public ChunkData RequestChunk(Vector3Int coord, bool create)
+	public ChunkData RequestChunk(Vector3Int pCoord)
 	{
 		ChunkData c;
 
-		if(chunks.ContainsKey(coord))
-			c = chunks[coord];
-		else if(!create)
-			c = null;
+		if(chunks.ContainsKey(pCoord))
+			c = chunks[pCoord];
 		else
 		{
-			LoadChunk(coord);
-			c = chunks[coord];
+			LoadChunk(pCoord);
+			c = chunks[pCoord];
 		}
 		return c;
 
@@ -52,8 +50,8 @@ public class WorldData
 			return;
 
 		//from file
-		ChunkData chunk = SaveSystem.LoadChunk(worldName, coord);
-		Debug.Log($"Load chunk at {coord} = {chunk}");
+		ChunkData chunk = SaveSystem.LoadChunk(coord);
+		//Debug.Log($"Load chunk at {coord} = {chunk}");
 		if(chunk != null)
 		{
 			chunks.Add(coord, chunk);
@@ -94,17 +92,17 @@ public class WorldData
 	//	AddToModifiedChunkList(chunk);
 	//}
 
-	public VoxelState GetVoxel(Vector3 pos)
+	public EBlockId GetVoxel(Vector3 pos)
 	{
 		if(!IsVoxelInWorld(pos))
-			return null;
+			return EBlockId.None;
 
 		Vector3Int coord = GetChunkCoord(pos);
 
-		ChunkData chunk = RequestChunk(coord, true);
+		ChunkData chunk = RequestChunk(coord);
 
 		if(chunk == null)
-			return null;
+			return EBlockId.None;
 
 		// Then create a Vector3Int with the position of our voxel *within* the chunk.
 		//Vector3Int voxel = new Vector3Int((int)(pos.x - coord.x), (int)pos.y, (int)(pos.z - coord.z));

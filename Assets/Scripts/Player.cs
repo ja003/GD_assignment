@@ -6,14 +6,14 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-	private const int PLAYER_HEIGHT = 1;
-	public float sprintSpeed = 6f;
-	public float walkSpeed = 3f;
-	public float jumpForce = 4f;
-	public float gravity = -9.8f;
+	private const int PLAYER_HEIGHT = 2;
+	[SerializeField] float sprintSpeed = 6f;
+	[SerializeField] float walkSpeed = 3f;
+	[SerializeField] float jumpForce = 4f;
+	[SerializeField] float gravity = -9.8f;
 
-	public float playerWidth = 0.15f;
-	public float boundsTolerance = 0.1f;
+	[SerializeField] float playerWidth = 0.15f;
+	[SerializeField] float boundsTolerance = 0.1f;
 
 	float horizontal;
 	float vertical;
@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
 
 	List<EBlockId> inventory = new List<EBlockId>();
 	[SerializeField] Text selectedBlockText;
-	public int selectedBlockIndex = 0;
+	int selectedBlockIndex = 0;
 
 	[SerializeField] Image hitStrengthBar;
 
@@ -40,20 +40,18 @@ public class Player : MonoBehaviour
 	[SerializeField] Transform highlightBlock;
 	[SerializeField] Transform PlaceBlock;
 
-
-
-	public float checkIncrement = 0.1f;
-	public float reach = 8f;
+	[SerializeField] float checkIncrement = 0.1f;
+	[SerializeField] float reach = 8f;
 
 	private void Start()
 	{
-		UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+		Cursor.lockState = CursorLockMode.Locked;
 		selectedBlockText.text = "";
 
 		inventory.Add(EBlockId.Yellow);
-		inventory.Add(EBlockId.Orange);
-		inventory.Add(EBlockId.Pink);
 		inventory.Add(EBlockId.Blue);
+		inventory.Add(EBlockId.Pink);
+		inventory.Add(EBlockId.Orange);
 
 		UpdateSelectedBlock();
 	}
@@ -87,7 +85,7 @@ public class Player : MonoBehaviour
 		const int max_durability = 2;
 		const int max_bar_height = 400;
 		float percentage = mouseHoldTime / max_durability;
-		hitStrengthBar.rectTransform.sizeDelta = new Vector2(40,percentage * max_bar_height);
+		hitStrengthBar.rectTransform.sizeDelta = new Vector2(40, percentage * max_bar_height);
 	}
 
 	void Jump()
@@ -120,13 +118,13 @@ public class Player : MonoBehaviour
 			velocity.y = CheckUpSpeed(velocity.y);
 	}
 
-	private float CheckDownSpeed(float downSpeed)
+	private float CheckDownSpeed(float pDownSpeed)
 	{
 		if(
-			world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth) ||
-			world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z - playerWidth) ||
-			world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth) ||
-			world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + downSpeed, transform.position.z + playerWidth)
+			IsVoxelSolid(-playerWidth, pDownSpeed, playerWidth) ||
+			IsVoxelSolid(playerWidth, pDownSpeed, -playerWidth) ||
+			IsVoxelSolid(playerWidth, pDownSpeed, playerWidth) ||
+			IsVoxelSolid(-playerWidth, pDownSpeed, playerWidth)
 			)
 		{
 			isGrounded = true;
@@ -135,24 +133,24 @@ public class Player : MonoBehaviour
 		else
 		{
 			isGrounded = false;
-			return downSpeed;
+			return pDownSpeed;
 		}
 	}
 
-	private float CheckUpSpeed(float upSpeed)
+	private float CheckUpSpeed(float pUpSpeed)
 	{
 		if(
-			world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + 2 + upSpeed, transform.position.z - playerWidth) ||
-			world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + 2 + upSpeed, transform.position.z - playerWidth) ||
-			world.CheckForVoxel(transform.position.x + playerWidth, transform.position.y + 2 + upSpeed, transform.position.z + playerWidth) ||
-			world.CheckForVoxel(transform.position.x - playerWidth, transform.position.y + 2 + upSpeed, transform.position.z + playerWidth)
+			IsVoxelSolid(-playerWidth, PLAYER_HEIGHT + pUpSpeed, playerWidth) ||
+			IsVoxelSolid(playerWidth, PLAYER_HEIGHT + pUpSpeed, -playerWidth) ||
+			IsVoxelSolid(playerWidth, PLAYER_HEIGHT + pUpSpeed, playerWidth) ||
+			IsVoxelSolid(-playerWidth, PLAYER_HEIGHT + pUpSpeed, playerWidth)
 			)
 		{
 			return 0;
 		}
 		else
 		{
-			return upSpeed;
+			return pUpSpeed;
 		}
 	}
 
@@ -202,11 +200,11 @@ public class Player : MonoBehaviour
 			{
 				world.ChunksController.GetChunk(highlightBlock.position).TryDestroyVoxel(highlightBlock.position, Time.time - mouseDownStart);
 			}
-		}
 
-		if(Input.GetMouseButtonDown(1))
-		{
-			world.ChunksController.GetChunk(PlaceBlock.position).EditVoxel(PlaceBlock.position, inventory[selectedBlockIndex]);
+			if(Input.GetMouseButtonDown(1))
+			{
+				world.ChunksController.GetChunk(PlaceBlock.position).EditVoxel(PlaceBlock.position, inventory[selectedBlockIndex]);
+			}
 		}
 	}
 
@@ -224,7 +222,7 @@ public class Player : MonoBehaviour
 		while(step < reach)
 		{
 			Vector3 pos = cam.position + (cam.forward * step);
-			if(world.CheckForVoxel(pos))
+			if(world.VoxelController.IsVoxelSolid(pos))
 			{
 				highlightBlock.position = new Vector3(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z));
 				PlaceBlock.position = lastPos;
@@ -243,17 +241,18 @@ public class Player : MonoBehaviour
 		PlaceBlock.gameObject.SetActive(false);
 	}
 
-	private bool CheckVoxel(float pXOfset, float pYOfset, float pZOfset)
+	private bool IsVoxelSolid(float pXOfset, float pYOfset, float pZOfset)
 	{
-		return CheckVoxel(new Vector3(pXOfset, pYOfset, pZOfset));
+		return IsVoxelSolid(new Vector3(pXOfset, pYOfset, pZOfset));
 	}
-	private bool CheckVoxel(Vector3 pOffset)
+	private bool IsVoxelSolid(Vector3 pOffset)
 	{
-		return world.CheckForVoxel(transform.position + pOffset);
+		return world.VoxelController.IsVoxelSolid(transform.position + pOffset);
 	}
 
-	public bool front => CheckVoxel(0, 0, playerWidth) || CheckVoxel(0, PLAYER_HEIGHT, playerWidth);
-	public bool back => CheckVoxel(0, 0, -playerWidth) || CheckVoxel(0, PLAYER_HEIGHT, -playerWidth);
-	public bool left => CheckVoxel(-playerWidth, 0, 0) || CheckVoxel(-playerWidth, PLAYER_HEIGHT, 0);
-	public bool right => CheckVoxel(playerWidth, 0, 0) || CheckVoxel(playerWidth, PLAYER_HEIGHT, 0);
+	// COLLISION CHECKS	
+	bool front => IsVoxelSolid(0, 0, playerWidth) || IsVoxelSolid(0, PLAYER_HEIGHT, playerWidth);
+	bool back => IsVoxelSolid(0, 0, -playerWidth) || IsVoxelSolid(0, PLAYER_HEIGHT, -playerWidth);
+	bool left => IsVoxelSolid(-playerWidth, 0, 0) || IsVoxelSolid(-playerWidth, PLAYER_HEIGHT, 0);
+	bool right => IsVoxelSolid(playerWidth, 0, 0) || IsVoxelSolid(playerWidth, PLAYER_HEIGHT, 0);
 }

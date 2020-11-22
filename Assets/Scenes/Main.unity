@@ -278,7 +278,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
+  near clip plane: 0.01
   far clip plane: 100
   field of view: 60
   orthographic: 0
@@ -350,14 +350,13 @@ MonoBehaviour:
   mouseHorizontalSensitivity: 20
   mouseVerticalSensitivity: 20
   selectedBlockText: {fileID: 304588293}
-  selectedBlockIndex: 1
   hitStrengthBar: {fileID: 1868799097}
   world: {fileID: 1090315036}
   cam: {fileID: 213917492}
   highlightBlock: {fileID: 92650849}
   PlaceBlock: {fileID: 1778455794}
-  checkIncrement: 0.1
-  reach: 8
+  checkIncrement: 0.2
+  reach: 5
 --- !u!4 &275946811
 Transform:
   m_ObjectHideFlags: 0
@@ -524,7 +523,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 5}
+  m_SizeDelta: {x: 0, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &444169870
 MonoBehaviour:
@@ -599,7 +598,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 0
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -933,17 +932,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48af2acd3f6dfd145a53e5066ce080a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: 5
   Player: {fileID: 275946811}
-  spawnPosition: {x: 0, y: 0, z: 0}
   BlockManager: {fileID: 1090315038}
-  biome: {fileID: 11400000, guid: 896aedf12f019f341ac61c034dac8bca, type: 2}
+  TerrainAttributes: {fileID: 11400000, guid: 896aedf12f019f341ac61c034dac8bca, type: 2}
   settings: {fileID: 11400000, guid: b09ad70d933e53b4896b410c22da955b, type: 2}
-  playerCoord: {x: 0, y: 0, z: 0}
   DebugScreen: {fileID: 1316573963}
-  worldData:
-    worldName: TestWorld
-    seed: 3
 --- !u!4 &1090315037
 Transform:
   m_ObjectHideFlags: 0

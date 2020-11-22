@@ -9,7 +9,6 @@ public class ChunksController
     List<Vector3Int> activeChunks = new List<Vector3Int>();
 
 	List<Vector3Int> chunksToCreate = new List<Vector3Int>();
-	List<Chunk> chunksToUpdate = new List<Chunk>();
 
 	public ChunksController()
 	{
@@ -22,14 +21,13 @@ public class ChunksController
 		return chunks[coord.x, coord.z];
 	}
 
-	public void CheckViewDistance(Vector3Int playerCoord)
+	public void CheckViewDistance(Vector3Int pPlayerCoord)
 	{
-
 		List<Vector3Int> previouslyActiveChunks = new List<Vector3Int>(activeChunks);
 
-		for(int x = playerCoord.x - Settings.Get.ViewDistanceInChunks; x <= playerCoord.x + Settings.Get.ViewDistanceInChunks; x++)
+		for(int x = pPlayerCoord.x - Settings.Get.ViewDistanceInChunks; x <= pPlayerCoord.x + Settings.Get.ViewDistanceInChunks; x++)
 		{
-			for(int z = playerCoord.z - Settings.Get.ViewDistanceInChunks; z <= playerCoord.z + Settings.Get.ViewDistanceInChunks; z++)
+			for(int z = pPlayerCoord.z - Settings.Get.ViewDistanceInChunks; z <= pPlayerCoord.z + Settings.Get.ViewDistanceInChunks; z++)
 			{
 				Vector3Int c = new Vector3Int(x, 0, z);
 				bool isInWorld = IsChunkInWorld(c);
@@ -75,13 +73,13 @@ public class ChunksController
 		CreateChunkAt(c);
 	}
 
-	internal void CreateChunkAt(Vector3Int coord)
+	void CreateChunkAt(Vector3Int pCoord)
 	{
-		if(!IsChunkInWorld(coord))
+		if(!IsChunkInWorld(pCoord))
 			return;
 
-		chunks[coord.x, coord.z] = new Chunk(coord, true);
-		activeChunks.Add(coord);
+		chunks[pCoord.x, pCoord.z] = new Chunk(pCoord, true);
+		activeChunks.Add(pCoord);
 	}
 
 	bool IsChunkInWorld(Vector3Int pCoord)
@@ -90,13 +88,8 @@ public class ChunksController
 			pCoord.z > 0 && pCoord.z < Settings.Get.WorldSizeInChunks;
 	}
 
-	internal void AddChunkToCreate(Vector3Int pPos)
+	public void AddChunkToCreate(Vector3Int pPos)
 	{
 		chunksToCreate.Insert(0, pPos);
-	}
-
-	internal void AddChunkToUpdate(Vector3 pPos)
-	{
-		chunksToUpdate.Insert(0, GetChunk(pPos));
 	}
 }

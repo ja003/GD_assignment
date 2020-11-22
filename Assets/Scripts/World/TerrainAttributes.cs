@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BiomeAttributes", menuName = "Minecraft/Biome")]
-public class BiomeAttrributes : ScriptableObject
+[CreateAssetMenu(fileName = "TerrainAttributes", menuName = "Minecraft/Terrain")]
+public class TerrainAttributes : ScriptableObject
 {
 	public Material chunkMaterial;
 	public int solidGroundHeight;
