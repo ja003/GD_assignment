@@ -185,13 +185,13 @@ public class Player : MonoBehaviour
 
 			else if(Input.GetMouseButtonUp(0))
 			{
-				world.GetChunk(highlightBlock.position).TryDestroyVoxel(highlightBlock.position, Time.time - mouseDownTime);
+				world.ChunksController.GetChunk(highlightBlock.position).TryDestroyVoxel(highlightBlock.position, Time.time - mouseDownTime);
 			}
 		}
 
 		if(Input.GetMouseButtonDown(1))
 		{
-			world.GetChunk(PlaceBlock.position).EditVoxel(PlaceBlock.position, inventory[selectedBlockIndex]);
+			world.ChunksController.GetChunk(PlaceBlock.position).EditVoxel(PlaceBlock.position, inventory[selectedBlockIndex]);
 		}
 	}
 

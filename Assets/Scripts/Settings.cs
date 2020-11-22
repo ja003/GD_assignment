@@ -6,5 +6,25 @@ using UnityEngine;
 public class Settings : ScriptableObject
 {
     public int LoadDistance = 16;
-    public bool enableThreading;
+
+	public int ChunkWidth = 16;
+	public int ChunkHeight = 128;
+	public int WorldSizeInChunks = 100;
+
+	public int WorldSizeInVoxels
+	{
+		get { return WorldSizeInChunks * ChunkWidth; }
+	}
+
+	public int ViewDistanceInChunks = 1;
+
+
+	public int TextureAtlasSizeInBlocks = 16;
+	public float NormalizedBlockTextureSize
+	{
+		get { return 1f / TextureAtlasSizeInBlocks; }
+	}
+
+	public static Settings Get => World.Instance.settings;
+
 }

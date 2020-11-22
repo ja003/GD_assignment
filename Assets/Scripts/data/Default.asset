@@ -12,22 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aaa424693065c9478074ad42346e128, type: 3}
   m_Name: Default
   m_EditorClassIdentifier: 
-  biomeName: default
+  chunkMaterial: {fileID: 2100000, guid: de20141548f4aaa4887dc3b5b8c4cc7a, type: 2}
   solidGroundHeight: 2
   terrainHeight: 5
   terrainScale: 2
-  lodes:
-  - nodeName: Dirt
-    blockID: 2
-    minHeight: 1
-    maxHeight: 255
-    scale: 0.1
-    threshold: 0.5
-    noiseOffset: 0
-  - nodeName: Sand
-    blockID: 5
-    minHeight: 30
-    maxHeight: 60
-    scale: 0.2
-    threshold: 0.6
-    noiseOffset: 500
+  dirtThickness: 2

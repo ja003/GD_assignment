@@ -16,7 +16,7 @@ public class Chunk
 	List<int> triangles = new List<int>();
 	List<Vector2> uvs = new List<Vector2>();
 
-	//public byte[,,] voxelMap = new byte[VoxelData.ChunkWidth, VoxelData.ChunkHeight, VoxelData.ChunkWidth];
+	//public byte[,,] voxelMap = new byte[Settings.Get.ChunkWidth, Settings.Get.ChunkHeight, Settings.Get.ChunkWidth];
 
 	//public VoxelState[,,] voxelMap => chunkData.map;
 
@@ -37,23 +37,19 @@ public class Chunk
 			Init();
 	}
 
-	public void Init()
+	private void Init()
 	{
 		chunkObject = new GameObject();
 		meshFilter = chunkObject.AddComponent<MeshFilter>();
 		meshRenderer = chunkObject.AddComponent<MeshRenderer>();
 
-		meshRenderer.material = World.Instance.material;
+		meshRenderer.material = World.Instance.biome.chunkMaterial;
 		chunkObject.transform.SetParent(World.Instance.transform);
-		chunkObject.transform.position = new Vector3(coord.x * VoxelData.ChunkWidth, 0, coord.z * VoxelData.ChunkWidth);
+		chunkObject.transform.position = new Vector3(coord.x * Settings.Get.ChunkWidth, 0, coord.z * Settings.Get.ChunkWidth);
 		chunkObject.name = $"Chunk_{coord.x},{coord.z}";
 
 		chunkData = World.Instance.worldData.RequestChunk(new Vector3Int((int)position.x, 0, (int)position.z), true);
 
-		lock(World.Instance.ChunkUpdateThreadLock)
-			World.Instance.chunksToUpdate.Add(this);
-
-		//PopulateVoxelMap();
 		UpdateChunk();
 	}
 
@@ -61,11 +57,11 @@ public class Chunk
 	{
 		ClearMeshData();
 
-		for(int y = 0; y < VoxelData.ChunkHeight; y++)
+		for(int y = 0; y < Settings.Get.ChunkHeight; y++)
 		{
-			for(int x = 0; x < VoxelData.ChunkWidth; x++)
+			for(int x = 0; x < Settings.Get.ChunkWidth; x++)
 			{
-				for(int z = 0; z < VoxelData.ChunkWidth; z++)
+				for(int z = 0; z < Settings.Get.ChunkWidth; z++)
 				{
 					if(World.Instance.BlockManager.IsSolid(chunkData.map[x, y, z].id))
 						UpdateMeshData(new Vector3(x, y, z));
@@ -103,11 +99,11 @@ public class Chunk
 
 	public bool IsVoxelInChunk(int x, int y, int z)
 	{
-		if(x < 0 || x > VoxelData.ChunkWidth - 1)
+		if(x < 0 || x > Settings.Get.ChunkWidth - 1)
 			return false;
-		if(y < 0 || y > VoxelData.ChunkHeight - 1)
+		if(y < 0 || y > Settings.Get.ChunkHeight - 1)
 			return false;
-		if(z < 0 || z > VoxelData.ChunkWidth - 1)
+		if(z < 0 || z > Settings.Get.ChunkWidth - 1)
 			return false;
 		return true;
 	}
@@ -143,21 +139,8 @@ public class Chunk
 
 		World.Instance.worldData.AddToModifiedChunkList(chunkData);
 
-
-
-		if(!World.Instance.settings.enableThreading)
-		{
-			UpdateSurroundingVoxels(xCheck, yCheck, zCheck);
-			UpdateChunk();
-		}
-		else
-		{
-			lock(World.Instance.ChunkUpdateThreadLock)
-			{
-				World.Instance.chunksToUpdate.Insert(0, this);
-				UpdateSurroundingVoxels(xCheck, yCheck, zCheck);
-			}
-		}
+		UpdateSurroundingVoxels(xCheck, yCheck, zCheck);
+		UpdateChunk();
 	}
 
 	void UpdateSurroundingVoxels(int x, int y, int z)
@@ -169,7 +152,8 @@ public class Chunk
 			Vector3 currentVoxel = thisVoxel + VoxelData.faceChecks[p];
 			if(!IsVoxelInChunk(currentVoxel))
 			{
-				World.Instance.chunksToUpdate.Insert(0, World.Instance.GetChunk(currentVoxel + position));
+				World.Instance.ChunksController.AddChunkToUpdate(currentVoxel + position);
+				//World.Instance.ChunksController.chunksToUpdate.Insert(0, World.Instance.ChunksController.GetChunk(currentVoxel + position));
 				//World.Instance.GetChunk(thisVoxel + position).UpdateChunk();
 			}
 		}
@@ -201,11 +185,11 @@ public class Chunk
 
 	//void PopulateVoxelMap()
 	//{
-	//	for(int y = 0; y < VoxelData.ChunkHeight; y++)
+	//	for(int y = 0; y < Settings.Get.ChunkHeight; y++)
 	//	{
-	//		for(int x = 0; x < VoxelData.ChunkWidth; x++)
+	//		for(int x = 0; x < Settings.Get.ChunkWidth; x++)
 	//		{
-	//			for(int z = 0; z < VoxelData.ChunkWidth; z++)
+	//			for(int z = 0; z < Settings.Get.ChunkWidth; z++)
 	//			{
 	//				voxelMap[x, y, z] = World.Instance.GetVoxel(new Vector3(x, y, z) + position);
 	//			}
@@ -254,18 +238,18 @@ public class Chunk
 
 	void AddTexture(int textureID)
 	{
-		float y = textureID / VoxelData.TextureAtlasSizeInBlocks;
-		float x = textureID - (y * VoxelData.TextureAtlasSizeInBlocks);
+		float y = textureID / Settings.Get.TextureAtlasSizeInBlocks;
+		float x = textureID - (y * Settings.Get.TextureAtlasSizeInBlocks);
 
-		x *= VoxelData.NormalizedBlockTextureSize;
-		y *= VoxelData.NormalizedBlockTextureSize;
+		x *= Settings.Get.NormalizedBlockTextureSize;
+		y *= Settings.Get.NormalizedBlockTextureSize;
 
-		y = 1 - y - VoxelData.NormalizedBlockTextureSize;
+		y = 1 - y - Settings.Get.NormalizedBlockTextureSize;
 
 		uvs.Add(new Vector2(x, y));
-		uvs.Add(new Vector2(x, y + VoxelData.NormalizedBlockTextureSize));
-		uvs.Add(new Vector2(x + VoxelData.NormalizedBlockTextureSize, y));
-		uvs.Add(new Vector2(x + VoxelData.NormalizedBlockTextureSize, y + VoxelData.NormalizedBlockTextureSize));
+		uvs.Add(new Vector2(x, y + Settings.Get.NormalizedBlockTextureSize));
+		uvs.Add(new Vector2(x + Settings.Get.NormalizedBlockTextureSize, y));
+		uvs.Add(new Vector2(x + Settings.Get.NormalizedBlockTextureSize, y + Settings.Get.NormalizedBlockTextureSize));
 	}
 }
 

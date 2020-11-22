@@ -13,4 +13,8 @@ MonoBehaviour:
   m_Name: Settings
   m_EditorClassIdentifier: 
   LoadDistance: 1
-  enableThreading: 0
+  ChunkWidth: 16
+  ChunkHeight: 128
+  WorldSizeInChunks: 100
+  ViewDistanceInChunks: 1
+  TextureAtlasSizeInBlocks: 16

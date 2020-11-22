@@ -4,24 +4,24 @@ using UnityEngine;
 
 public static class VoxelData
 {
-	public static readonly int ChunkWidth = 16;
-	public static readonly int ChunkHeight = 128;
-	public static readonly int WorldSizeInChunks = 100;
+	//public static readonly int ChunkWidth = 16;
+	//public static readonly int ChunkHeight = 128;
+	//public static readonly int WorldSizeInChunks = 100;
 
-	public static int WorldSizeInVoxels
-	{
-		get { return WorldSizeInChunks * ChunkWidth; }
-	}
+	//public static int WorldSizeInVoxels
+	//{
+	//	get { return WorldSizeInChunks * ChunkWidth; }
+	//}
 
-	public static readonly int ViewDistanceInChunks = 1;
+	//public static readonly int ViewDistanceInChunks = 1;
 
 
-	//public static readonly int TextureAtlasSizeInBlocks = 2; / try
-	public static readonly int TextureAtlasSizeInBlocks = 16; //texturePack
-	public static float NormalizedBlockTextureSize
-	{
-		get { return 1f / TextureAtlasSizeInBlocks; }
-	}
+	////public static readonly int TextureAtlasSizeInBlocks = 2; / try
+	//public static readonly int TextureAtlasSizeInBlocks = 16; //texturePack
+	//public static float NormalizedBlockTextureSize
+	//{
+	//	get { return 1f / TextureAtlasSizeInBlocks; }
+	//}
 
 	public static readonly Vector3[] voxelVerts = new Vector3[8]
 	{

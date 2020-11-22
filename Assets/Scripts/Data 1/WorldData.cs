@@ -73,9 +73,9 @@ public class WorldData
 
 	bool IsVoxelInWorld(Vector3 pos)
 	{
-		return pos.x >= 0 && pos.x < VoxelData.WorldSizeInVoxels &&
-			pos.y >= 0 && pos.y < VoxelData.ChunkHeight &&
-			pos.z >= 0 && pos.z < VoxelData.WorldSizeInVoxels;
+		return pos.x >= 0 && pos.x < Settings.Get.WorldSizeInVoxels &&
+			pos.y >= 0 && pos.y < Settings.Get.ChunkHeight &&
+			pos.z >= 0 && pos.z < Settings.Get.WorldSizeInVoxels;
 	}
 
 	public void SetVoxel(Vector3 pos, EBlockId value)
@@ -116,12 +116,12 @@ public class WorldData
 	private Vector3Int GetChunkCoord(Vector3 pos)
 	{
 		// Find out the ChunkCoord value of our voxel's chunk.
-		int x = Mathf.FloorToInt(pos.x / VoxelData.ChunkWidth);
-		int z = Mathf.FloorToInt(pos.z / VoxelData.ChunkWidth);
+		int x = Mathf.FloorToInt(pos.x / Settings.Get.ChunkWidth);
+		int z = Mathf.FloorToInt(pos.z / Settings.Get.ChunkWidth);
 
 		// Then reverse that to get the position of the chunk.
-		x *= VoxelData.ChunkWidth;
-		z *= VoxelData.ChunkWidth;
+		x *= Settings.Get.ChunkWidth;
+		z *= Settings.Get.ChunkWidth;
 
 		return new Vector3Int(x, 0, z);
 	}
