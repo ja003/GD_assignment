@@ -19,8 +19,7 @@ public class Player : MonoBehaviour
 	float vertical;
 	float mouseHorizontal;
 	float mouseVertical;
-	[SerializeField] float mouseHorizontalSensitivity = 20;
-	[SerializeField] float mouseVerticalSensitivity = 20;
+	[SerializeField] public float mouseSensitivity = 20;
 	Vector3 velocity;
 	float verticalMomentum;
 	bool jumpRequest;
@@ -37,8 +36,8 @@ public class Player : MonoBehaviour
 	[SerializeField] World world;
 	[SerializeField] Transform cam;
 
-	[SerializeField] Transform highlightBlock;
-	[SerializeField] Transform PlaceBlock;
+	[SerializeField] Transform highlightDestroy;
+	[SerializeField] Transform highlightPlace;
 
 	[SerializeField] float checkIncrement = 0.1f;
 	[SerializeField] float reach = 8f;
@@ -76,7 +75,7 @@ public class Player : MonoBehaviour
 
 	private void UpdateHitStrengthBar()
 	{
-		bool active = highlightBlock.gameObject.activeSelf && Input.GetMouseButton(0);
+		bool active = highlightDestroy.gameObject.activeSelf && Input.GetMouseButton(0);
 		hitStrengthBar.gameObject.SetActive(active);
 		if(!active)
 			return;
@@ -167,8 +166,8 @@ public class Player : MonoBehaviour
 
 		horizontal = Input.GetAxis("Horizontal");
 		vertical = Input.GetAxis("Vertical");
-		mouseHorizontal = Input.GetAxis("Mouse X") * mouseHorizontalSensitivity;
-		mouseVertical = Input.GetAxis("Mouse Y") * mouseVerticalSensitivity;
+		mouseHorizontal = Input.GetAxis("Mouse X") * mouseSensitivity;
+		mouseVertical = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
 		if(Input.GetKeyDown(KeyCode.LeftShift))
 			isSprinting = true;
@@ -187,9 +186,14 @@ public class Player : MonoBehaviour
 			if(scroll < 0)
 				selectedBlockIndex--;
 			UpdateSelectedBlock();
+
+			if(Input.GetKey(KeyCode.LeftControl))
+				mouseSensitivity += Mathf.Sign(scroll);
 		}
 
-		if(highlightBlock.gameObject.activeSelf)
+		
+
+		if(highlightDestroy.gameObject.activeSelf)
 		{
 			if(Input.GetMouseButtonDown(0))
 			{
@@ -198,19 +202,19 @@ public class Player : MonoBehaviour
 
 			else if(Input.GetMouseButtonUp(0))
 			{
-				world.ChunksController.GetChunk(highlightBlock.position).TryDestroyVoxel(highlightBlock.position, Time.time - mouseDownStart);
+				world.ChunksController.GetChunk(highlightDestroy.position).TryDestroyVoxel(highlightDestroy.position, Time.time - mouseDownStart);
 			}
 
 			if(Input.GetMouseButtonDown(1))
 			{
-				world.ChunksController.GetChunk(PlaceBlock.position).EditVoxel(PlaceBlock.position, inventory[selectedBlockIndex]);
+				world.ChunksController.GetChunk(highlightPlace.position).EditVoxel(highlightPlace.position, inventory[selectedBlockIndex]);
 			}
 		}
 	}
 
 	private void UpdateSelectedBlock()
 	{
-		selectedBlockIndex = selectedBlockIndex % inventory.Count;
+		selectedBlockIndex = (inventory.Count + selectedBlockIndex) % inventory.Count;
 		selectedBlockText.text = inventory[selectedBlockIndex] + " block selected";
 	}
 
@@ -224,11 +228,11 @@ public class Player : MonoBehaviour
 			Vector3 pos = cam.position + (cam.forward * step);
 			if(world.VoxelController.IsVoxelSolid(pos))
 			{
-				highlightBlock.position = new Vector3(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z));
-				PlaceBlock.position = lastPos;
+				highlightDestroy.position = new Vector3(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y), Mathf.FloorToInt(pos.z));
+				highlightPlace.position = lastPos;
 
-				highlightBlock.gameObject.SetActive(true);
-				PlaceBlock.gameObject.SetActive(true);
+				highlightDestroy.gameObject.SetActive(true);
+				highlightPlace.gameObject.SetActive(true);
 
 				return;
 			}
@@ -237,8 +241,8 @@ public class Player : MonoBehaviour
 			step += checkIncrement;
 		}
 
-		highlightBlock.gameObject.SetActive(false);
-		PlaceBlock.gameObject.SetActive(false);
+		highlightDestroy.gameObject.SetActive(false);
+		highlightPlace.gameObject.SetActive(false);
 	}
 
 	private bool IsVoxelSolid(float pXOfset, float pYOfset, float pZOfset)

@@ -23,9 +23,8 @@ public static class VoxelData
 		new Vector3Int(0, 1, 0),
 		new Vector3Int(0, -1, 0),
 		new Vector3Int(-1, 0, 0),
-		new Vector3Int(1, 0, 0)
+		new Vector3Int(1, 0, 0),
 	};
-
 
 	public static readonly int[,] VoxelTris = new int[6, 4]
 	{
@@ -33,7 +32,7 @@ public static class VoxelData
 		{5, 6, 4, 7}, //front 
 		{3, 7, 2, 6}, //top 
 		{1, 5, 0, 4}, //bottom 
-		{4, 7, 0, 3}, //reft 
+		{4, 7, 0, 3}, //left 
 		{1, 2, 5, 6}  //right 
 	};
 }

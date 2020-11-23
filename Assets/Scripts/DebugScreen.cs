@@ -20,6 +20,7 @@ public class DebugScreen : MonoBehaviour
 		controlsText += $"Press F1 to save\n";
 		controlsText += $"Press F3 to hide UI\n";
 		controlsText += $"Scroll to change item\n";
+		controlsText += $"Ctrl+Scroll to change mouse sensitivity\n";
 		controls.text = controlsText;
 	}
 
@@ -39,6 +40,7 @@ public class DebugScreen : MonoBehaviour
 		infoText += $"chunk = [{world.PlayerCoord.x},{world.PlayerCoord.z}]\n";
 		infoText += $"{SaveSystem.DebugText}\n";
 		infoText += $"{DestroyText}\n";
+		infoText += $"Mouse sensitivity: {world.Player.mouseSensitivity}\n";
 
 		info.text = infoText;
 	}

@@ -5,7 +5,7 @@ public class World : MonoBehaviour
 {
 	public static World Instance { get; private set; }
 
-	[SerializeField] public Transform Player;
+	[SerializeField] public Player Player;
 
 	[SerializeField] public BlockManager BlockManager;
 	[SerializeField] public TerrainAttributes TerrainAttributes;
@@ -41,8 +41,8 @@ public class World : MonoBehaviour
 			TerrainAttributes.solidGroundHeight + 10,
 			Settings.Get.WorldCentre);
 
-		Player.position = spawnPosition;
-		playerLastCoord = CoordConvertor.GetChunkCoord(Player.position);
+		Player.transform.position = spawnPosition;
+		playerLastCoord = CoordConvertor.GetChunkCoord(Player.transform.position);
 
 		LoadWorld();
 
@@ -51,7 +51,7 @@ public class World : MonoBehaviour
 
 	void Update()
 	{
-		PlayerCoord = CoordConvertor.GetChunkCoord(Player.position);
+		PlayerCoord = CoordConvertor.GetChunkCoord(Player.transform.position);
 
 		if(!PlayerCoord.Equals(playerLastCoord))
 		{

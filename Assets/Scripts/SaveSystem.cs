@@ -100,7 +100,7 @@ public static class SaveSystem
 
 		if(File.Exists(loadPath))
 		{
-			Debug.Log("Loading chunk " + chunkName);
+			//Debug.Log("Loading chunk " + chunkName);
 
 			BinaryFormatter formatter = new BinaryFormatter();
 			FileStream stream = new FileStream(loadPath, FileMode.Open);

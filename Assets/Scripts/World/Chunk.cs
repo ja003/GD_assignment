@@ -51,6 +51,8 @@ public class Chunk
 
 	public void UpdateChunk()
 	{
+		//Debug.Log($"Update chunk {coord}");
+
 		ClearMeshData();
 
 		for(int y = 0; y < Settings.Get.ChunkHeight; y++)
@@ -151,7 +153,7 @@ public class Chunk
 			Vector3 currentVoxel = thisVoxel + VoxelData.FaceChecks[p];
 			if(!IsVoxelInChunk(currentVoxel))
 			{
-				World.Instance.ChunksController.GetChunk(thisVoxel + position).UpdateChunk();
+				World.Instance.ChunksController.GetChunk(currentVoxel + position).UpdateChunk();
 			}
 		}
 	}
@@ -187,14 +189,6 @@ public class Chunk
 		mesh.triangles = triangles.ToArray();
 		mesh.uv = uvs.ToArray();
 		mesh.normals = normals.ToArray();
-
-		//foreach(var n in normals)
-		//{
-		//	Debug.DrawLine(position, position + n, Color.red, 10);
-		//}
-
-		//mesh.RecalculateNormals();
-
 		meshFilter.mesh = mesh;
 	}
 

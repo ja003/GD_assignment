@@ -36,6 +36,8 @@ public class BlockManager : MonoBehaviour
 			case EBlockId.Pink: return 1f;
 			case EBlockId.Orange: return 2f;
 
+			case EBlockId.Stone: return 0.2f;
+
 			case EBlockId.Bedrock: return int.MaxValue;
 
 		}
